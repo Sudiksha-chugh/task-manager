@@ -57,6 +57,13 @@ function Login() {
           <Link className="back-link" to="/forgot-password">
             Forgot Password?
           </Link>
+          <a
+            href={`${import.meta.env.VITE_BACKEND_URL || 'http://localhost:5001'}/api/auth/google`}
+            className="btn btn-secondary"
+            style={{ display: 'block', textAlign: 'center', marginTop: '8px' }}
+          >
+            Login with Google
+          </a>
         </form>
       </div>
     </div>
