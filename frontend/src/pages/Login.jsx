@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { useNavigate } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 import api from '../api/axios';
 import { useAuth } from '../context/AuthContext';
 
@@ -54,6 +54,9 @@ function Login() {
           <button type="submit" className="btn btn-primary">
             Login
           </button>
+          <Link className="back-link" to="/forgot-password">
+            Forgot Password?
+          </Link>
         </form>
       </div>
     </div>
