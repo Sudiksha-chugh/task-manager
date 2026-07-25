@@ -14,7 +14,9 @@ export function AuthProvider({ children }) {
 
     const { userId } = JSON.parse(atob(token.split('.')[1]));
     const socket = io(import.meta.env.VITE_BACKEND_URL || 'http://localhost:5001');
-    socket.emit('join', userId);
+    socket.on('connect', () => {
+      socket.emit('join', userId);
+    });
     socketRef.current = socket;
     setSocketReady(true);
 
