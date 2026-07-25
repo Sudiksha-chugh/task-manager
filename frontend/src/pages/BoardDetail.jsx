@@ -2,6 +2,7 @@ import { useEffect, useState } from 'react';
 import { Link, useParams } from 'react-router-dom';
 import { DndContext, useDraggable, useDroppable } from '@dnd-kit/core';
 import api from '../api/axios';
+import { useAuth } from '../context/AuthContext';
 
 const COLUMNS = [
   { key: 'todo', label: 'To Do' },
@@ -40,6 +41,7 @@ function DraggableTask({ task }) {
 
 function BoardDetail() {
   const { boardId } = useParams();
+  const { socket } = useAuth();
   const [tasks, setTasks] = useState([]);
   const [title, setTitle] = useState('');
   const [loading, setLoading] = useState(true);
@@ -60,6 +62,23 @@ function BoardDetail() {
   useEffect(() => {
     fetchTasks();
   }, [boardId]);
+
+  useEffect(() => {
+    if (!socket) return;
+
+    const handleTaskCreated = (task) => {
+      const taskBoardId = (task.board?._id || task.board)?.toString();
+      if (taskBoardId === boardId) {
+        setTasks((prev) => {
+          if (prev.some((t) => t._id === task._id)) return prev;
+          return [...prev, task];
+        });
+      }
+    };
+
+    socket.on('task:created', handleTaskCreated);
+    return () => socket.off('task:created', handleTaskCreated);
+  }, [socket, boardId]);
 
   const handleAddTask = async (e) => {
     e.preventDefault();

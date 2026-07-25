@@ -1,7 +1,10 @@
 const express = require('express');
+const { Resend } = require('resend');
 const Board = require('../models/Board');
 const Task = require('../models/Task');
 const auth = require('../middleware/auth');
+
+const resend = new Resend(process.env.RESEND_API_KEY);
 
 const router = express.Router();
 
@@ -21,6 +24,22 @@ router.post('/', async (req, res) => {
     }
 
     const task = await Task.create({ title, board: boardId });
+
+    try {
+      const User = require('../models/User');
+      const owner = await User.findById(board.owner);
+      if (owner) {
+        await resend.emails.send({
+          from: 'Task Manager <onboarding@resend.dev>',
+          to: owner.email,
+          subject: 'New task added to your board',
+          html: `<p>A new task titled <strong>${task.title}</strong> was added to board <strong>${board.name}</strong>.</p>`,
+        });
+      }
+    } catch (emailErr) {
+      console.error('Failed to send task notification email:', emailErr.message);
+    }
+
     res.status(201).json(task);
   } catch (err) {
     res.status(500).json({ message: err.message });
