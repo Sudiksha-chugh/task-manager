@@ -15,7 +15,7 @@ function Register() {
 
     try {
       await api.post('/auth/register', { name, email, password });
-      navigate('/login');
+      navigate(`/verify-otp?email=${encodeURIComponent(email)}`);
     } catch (err) {
       setError(err.response?.data?.message || 'Registration failed');
     }

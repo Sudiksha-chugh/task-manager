@@ -22,6 +22,7 @@ passport.use(
             name: profile.displayName,
             email,
             password: crypto.randomBytes(16).toString('hex'),
+            isVerified: true,
           });
         }
 
